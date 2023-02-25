@@ -1,0 +1,8 @@
+flask
+pymongo
+
+nba-api
+selenium
+onnx
+
+# bson
