@@ -69,7 +69,7 @@ class Monitor(object):
 
             num_correct += np.round(result['games_completed'] * result['accuracy'], 1)
 
-            ror['without_rule'] += result['rate_of_return']
+            profit['without_rule'] += result['rate_of_return']
             round_info = self.rounds_collection.find_one({'prediction_date':result['batch_prediction_date']}, 
                                                          {"_id":1, 'rule_in': 1, "values": 1, 'prediction_date':1})
             rule_in = round_info['rule_in']
@@ -87,6 +87,7 @@ class Monitor(object):
             acc = num_correct/num_completed
             for i in range(10):
                 ror['rules'][i] = profit['rules'][i]/ror['rules'][i]
+            ror['without_rule'] = profit['without_rule']/num_batches
 
         return {'interval_start_date': start_date, 'interval_end_date': end_date,
                 'games_completed':num_completed, 'all_games': num_all, 
