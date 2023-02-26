@@ -52,6 +52,8 @@ class Monitor(object):
         # results = results[results['all_games'] > 0]
         
         num_completed, num_all = 0, 0
+        profit = {'without_rule':0,
+               'rules':{i:0 for i in range(10)}}
         ror = {'without_rule':0,
                'rules':{i:0 for i in range(10)}}
         num_correct = 0
@@ -72,7 +74,8 @@ class Monitor(object):
                                                          {"_id":1, 'rule_in': 1, "values": 1, 'prediction_date':1})
             rule_in = round_info['rule_in']
             for k, v in dict(rule_in).items():
-                ror['rules'][int(k)] += int(v)*result['rate_of_return']
+                profit['rules'][int(k)] += int(v)*result['rate_of_return']
+                ror['rules'][int(k)] += int(v)
             
             num_batches += 1
             batch_dates_played.append(result['batch_prediction_date'])
@@ -82,9 +85,11 @@ class Monitor(object):
             acc = None
         else:
             acc = num_correct/num_completed
+            for i in range(10):
+                ror['rules'][i] = profit['rules'][i]/ror['rules'][i]
 
         return {'interval_start_date': start_date, 'interval_end_date': end_date,
                 'games_completed':num_completed, 'all_games': num_all, 
-                'rate_of_return': ror, 'accuracy': acc, 
+                'profit':profit, 'rate_of_return': ror, 'accuracy': acc, 
                 'num_bathces':num_batches, 'batch_dates': batch_dates_played}
         

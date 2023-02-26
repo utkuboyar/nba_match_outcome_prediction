@@ -6,6 +6,7 @@ class OddsScraper(object):
         self.url = 'https://oddspedia.com/basketball/usa/nba#odds'
         self.required_games = required_games
         self.scraped_games = []
+        self.game_keys = set()
         
     def _open(self):
         self.driver = webdriver.Chrome()
@@ -52,6 +53,8 @@ class OddsScraper(object):
             game_key = f'{teams[0]} vs. {teams[1]}'
             if game_key not in self.required_games:
                 continue
+            if game_key in self.game_keys:
+                continue
 
             # odds
             odds = game.find_elements(By.CLASS_NAME, 'odd__value')
@@ -70,6 +73,7 @@ class OddsScraper(object):
             game_info['date'] = dates[i]
 
             self.scraped_games.append(game_info)
+            self.game_keys.add(game_key)
             
     def _change_page(self):
         left_button = self.driver.find_element(By.CLASS_NAME, 'ml-pagination__btn')
@@ -80,8 +84,8 @@ class OddsScraper(object):
         self._get_main_page()
         
         self._get_content()
-        #self._change_page()
-        #self._get_content()
+        self._change_page()
+        self._get_content()
         
         self._close()
         return self.scraped_games
